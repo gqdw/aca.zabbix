@@ -1,2 +1,5 @@
 ---
 # handlers file for tt
+- name: restart zabbix
+  service: name=zabbix-agent state=restarted enabled=yes
+
