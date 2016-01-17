@@ -1,0 +1,32 @@
+---
+# tasks file for tt
+- name: 
+- name: cp zabbix-release-2.4-1.el7.noarch.rpm
+  copy: src=files/zabbix-release-2.4-1.el7.noarch.rpm dest=/opt/zabbix-release-2.4-1.el7.noarch.rpm
+  when: ansible_os_family == "RedHat" and ansible_lsb.major_release|int == 7
+
+- name: cp zabbix-release-2.4-1.el6.noarch.rpm
+  copy: src=files/zabbix-release-2.4-1.el6.noarch.rpm dest=/opt/zabbix-release-2.4-1.el6.noarch.rpm
+  when: ansible_os_family == "RedHat" and ansible_lsb.major_release|int == 6
+
+- name: install zabbix repo zabbix-release-2.4-1.el7.noarch.rpm
+  yum: name=/opt/zabbix-release-2.4-1.el7.noarch.rpm state=present
+  when: ansible_os_family == "RedHat" and ansible_lsb.major_release|int == 7
+
+- name: install zabbix repo zabbix-release-2.4-1.el6.noarch.rpm
+  yum: name=/opt/zabbix-release-2.4-1.el6.noarch.rpm state=present
+  when: ansible_os_family == "RedHat" and ansible_lsb.major_release|int == 6
+
+- name: change yum.conf timeout=10
+  lineinfile: dest=/etc/yum.conf regexp='^timeout=3' line='timeout=10'
+
+- name: install zabbix-agent and zabbix-get
+  yum: name={{ item }} state=present update_cache=yes
+  with_items:
+    - zabbix-agent
+    - zabbix-get
+
+- name: Copy zabbix configuration to /etc/zabbix/zabbix_agentd.conf
+  template: src=files/zabbix_agentd.j2 dest=/etc/zabbix/zabbix_agentd.conf
+  notify: restart zabbix
+
