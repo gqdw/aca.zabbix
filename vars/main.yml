@@ -1,2 +1,4 @@
 ---
 # vars file for tt
+hostname: "{{ansible_hostname}}"
+server_name: "10.168.158.128"
